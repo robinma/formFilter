@@ -18,8 +18,11 @@
 
 
   //formFilter constracter
-  var formFilter = function() {
+  var formFilter = function(params) {
+    //field array
+    this.fieldArr=[];
     
+
   };
 
   //formFilter version Number

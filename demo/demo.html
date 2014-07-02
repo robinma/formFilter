@@ -9,7 +9,7 @@
 <body>
 	<ul>
 		<li>
-			<input type="text" name="name">
+			<input type="text" name="name" ff-length="">
 		</li>
 		<li>
 			<input type="text" name="password">
@@ -21,5 +21,21 @@
 			<input type="submit" name="button">
 		</li>
 	</ul>
+
+	<script type="text/javascript">
+
+	var ffilter=formFilter({
+		'input[name="name"]':{
+			require:true
+		},
+		'input[name="password"]':{
+			require:true
+		},
+		'input[name="phone"]':{
+			
+		}
+	});
+
+	</script>
 </body>
 </html>
