@@ -7,15 +7,22 @@
 	<script type="text/javascript" src="../formFilter.js"></script>
 </head>
 <body>
-	<ul>
+	<ul node-type="form">
 		<li>
-			<input type="text" name="name" ff-length="">
+			<lable class="d">name:</lable>
+			<input type="text" name="name" ff-length="1,4,'请输入1-4个文字'">
 		</li>
 		<li>
+			<lable class="d">password:</lable>
 			<input type="text" name="password">
 		</li>
 		<li>
-			<input type="text" name="phone">
+			<lable class="d">rePassword:</lable>
+			<input type="text" name="repassword" ff-exp="/\S{6,18}/">
+		</li>
+		<li>
+			<lable class="d">phoneNum:</lable>
+			<input type="text" name="phone" ff-exp="/13[0-9]{9}/">
 		</li>
 		<li>
 			<input type="submit" name="button">
@@ -24,15 +31,20 @@
 
 	<script type="text/javascript">
 
-	var ffilter=formFilter({
+	var ffilter=formFilter('ul[node-type="form"]',{
 		'input[name="name"]':{
-			require:true
+			require:true,
+			callback:''
 		},
 		'input[name="password"]':{
 			require:true
 		},
+		'input[name="repassword"]':{
+			require:true
+		},
 		'input[name="phone"]':{
-			
+			'ff-exp':'',
+			'ff-remote':''			
 		}
 	});
 
