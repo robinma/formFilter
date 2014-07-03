@@ -61,7 +61,7 @@
       var __ = this;
       $.each(params, function(k, v) {
         var field = new Field({
-          el: k,
+          el: k.replace(/^\s*|\s*$/ig, ''),
           $el: __.get$Obj(k),
           config: v
         })
@@ -134,28 +134,70 @@
     },
     //tigger events
     emitEvn: function() {
-      var __=this;
-      this.$el.on('blur',function(){
+      var __ = this;
+      this.$el.on('blur', function() {
         __._todoRule()
       })
     },
     //traverse rule
     _todoRule: function() {
-      var __=this;
-      var rules=__.rules;
-      var ruleLen=rules.length;
-      var data=__.getData();
-      $.each(rules,function(inx,rule){
-        for(var i in rule){
-          __.distRule(i,rule[i])
+      var __ = this;
+      var rules = __.rules;
+      var ruleLen = rules.length;
+      var data = __.getData();
+      $.each(rules, function(inx, rule) {
+        for (var i in rule) {
+          __.distRule(i, rule[i])
         }
       });
     },
-    distRule:function(k,v,callback){
-      console.log(k,v,callback)
+    //dispatch verify rule
+    distRule: function(k, v, callback) {
+      //字符长度验证
+      if (k == 'ff-length') {
+        new lengthVer(v)
+      }
+
+    },
+    //set verfiy plugin callback method
+    set_callback: function(valiObj) {
+      var __ = this;
+      //set validata object callback method
+      valiObj.callback = function(err) {
+        if (err) {
+          __.checked = false;
+          __.callback(true, __.tips);
+        } else {
+          __.checked = true;
+          __.callback(false, __.tips);
+        }
+      }
+
+      valiObj.validata(__.getData())
+
     }
   });
 
+  //verfiy string length
+  var lengthVer = function(lenstr) {
+    this.valArr = lenstr.split(',');
+    this.tips = '';
+    this.callback = null;
+
+  }
+  lengthVer.prototype.valiData = function(callback) {
+    var valArr = this.valArr;
+    if (valArr.length >= 2) {
+      this.max = valArr[1];
+      this.min = valArr[0];
+      this.tips = valArr[2] ? valArr[2] : '';
+    } else if (valArr.length == 1) {
+      this.min = this.max = valArr[0];
+    }
+
+    if()
+
+  }
 
 
   return function() {
