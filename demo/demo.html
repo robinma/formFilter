@@ -34,7 +34,7 @@
 	var ffilter=formFilter('ul[node-type="form"]',{
 		'  input[name="name"]':{
 			require:true,
-			callback:''
+			callback:setStatus
 		},
 		' input[name="password"]':{
 			require:true
@@ -47,6 +47,10 @@
 			'ff-remote':''			
 		}
 	});
+
+	var setStatus=function(){
+		console.log('----------callback',arguments)
+	}
 
 	</script>
 </body>

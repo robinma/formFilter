@@ -92,7 +92,7 @@
     //cache field jqueryObj
     this.$el = params.$el;
 
-    this.callback = params.callback;
+    this.callback = params.callback || nullFn;
     this.checked = false;
     this._init();
   }
@@ -130,7 +130,7 @@
       return rules;
     },
     getData: function() {
-      return this.$el.val();
+      return this.$el.val().replace(/$\s*|\s*$/gi, '');
     },
     //tigger events
     emitEvn: function() {
@@ -147,16 +147,23 @@
       var data = __.getData();
       $.each(rules, function(inx, rule) {
         for (var i in rule) {
-          __.distRule(i, rule[i])
+          console.log(i,rule[i])
+          __.distRule(i, rule[i], data)
         }
       });
     },
     //dispatch verify rule
-    distRule: function(k, v, callback) {
+    distRule: function(k, v, data, callback) {
+      var __=this,valiData;
       //字符长度验证
       if (k == 'ff-length') {
-        new lengthVer(v)
+        valiData = new lengthVer(v)
+
+        __.set_callback(valiData);
       }
+
+      
+
 
     },
     //set verfiy plugin callback method
@@ -164,16 +171,17 @@
       var __ = this;
       //set validata object callback method
       valiObj.callback = function(err) {
+        
         if (err) {
           __.checked = false;
-          __.callback(true, __.tips);
+          __.callback(true, valiObj.tips,__);
         } else {
           __.checked = true;
-          __.callback(false, __.tips);
+          __.callback(false,valiObj.tips,__);
         }
       }
-
-      valiObj.validata(__.getData())
+      //to do validata with input text
+      valiObj.valiData(__.getData())
 
     }
   });
@@ -185,7 +193,7 @@
     this.callback = null;
 
   }
-  lengthVer.prototype.valiData = function(callback) {
+  lengthVer.prototype.valiData = function(itxt) {
     var valArr = this.valArr;
     if (valArr.length >= 2) {
       this.max = valArr[1];
@@ -194,11 +202,17 @@
     } else if (valArr.length == 1) {
       this.min = this.max = valArr[0];
     }
-
-    if()
+    var vtlen = itxt.length;
+    if (vtlen < this.min || vtlen > this.max) {
+      this.callback(true)
+      return false;
+    }
+    this.callback(false)
+    return true;
 
   }
 
+  var nullFn=function(){};
 
   return function() {
     var argLen = arguments.length;
