@@ -94,7 +94,7 @@
 
     this.callback = this.config.callback;
 
-    this.ruleStatus={};
+    this.ruleStatus = {};
 
     this.checked = false;
     this._init();
@@ -163,7 +163,7 @@
     },
     //set gobel feild status
     fieldVerify: function(err) {
-      var __=this;
+      var __ = this;
       //ruleStatus
       if (err) {
 
@@ -214,11 +214,9 @@
   lengthVer.prototype.valiData = function(itxt) {
     var valArr = this.valArr;
     if (valArr.length >= 2) {
-      this.max = valArr[1];
-      this.min = valArr[0];
       this.tips = valArr[2] ? valArr[2] : '';
     } else if (valArr.length == 1) {
-      this.min = this.max = valArr[0];
+      valArr[1] = valArr[0];
     }
     var exp = new RegExp('\.{' + valArr[0] + ',' + valArr[1] + '}');
     console.log(exp)
