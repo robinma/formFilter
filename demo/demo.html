@@ -35,6 +35,7 @@
 
 	<script type="text/javascript">
 	var setStatus=function(err,txt,field){
+		console.log(arguments)
 		var tip=field.$el.parent('li').find('.tip');
 		if(err){
 			tip.text('');

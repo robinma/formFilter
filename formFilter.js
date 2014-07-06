@@ -45,11 +45,10 @@
 
   };
 
-  //formFilter version Number
-  formFilter.version = '0.0.0';
-
   //extend method
   $.extend(formFilter.prototype, {}, {
+    //formFilter version Number
+    version: '0.0.0',
     //formFilter init
     _init: function(params) {
       if (typeof params === 'object') {
@@ -127,7 +126,9 @@
           ruleTemp[val] = crule;
         }
         if ($.isEmptyObject(ruleTemp)) return;
-        rules.push(ruleTemp)
+        for (var i in ruleTemp) {
+          rules.push([i, ruleTemp[i]])
+        }
       })
 
       return rules;
@@ -146,30 +147,41 @@
     _todoRule: function() {
       var __ = this;
       var rules = __.rules;
-      var ruleLen = rules.length;
-      var data = __.getData();
-
-      for (var i in rules) {
+      for (var i = 0, l = rules.length; i < l; i++) {
         var rule = rules[i];
-        var resule;
-        for (var i in rule) {
-          resule = __.distRule(i, rule[i], __.fieldVerify)
-        }
-        if (!resule) {
-          break;
-        }
+        var resule = __.distRule(rule[0], rule[1], __.fieldVerify)
+        if (!resule) break;
       }
 
     },
     //set gobel feild status
-    fieldVerify: function(err) {
+    fieldVerify: function(err, verfiyClass, verfiyObj) {
       var __ = this;
-      //ruleStatus
+      var rules = __.rules;
+      var finished = 0,
+        notFinished = 0;
+      //rule Status
+      console.log(__, __.ruleStatus,err)
+      __.ruleStatus[verfiyClass] = err;
+
       if (err) {
-
-      } else {
-
+        __.callback(true, verfiyObj.tips, __);
+        return false;
       }
+      //check finish info
+      for (var i = 0, l = rules.length; i < l; i++) {
+        var cstatus = __.ruleStatus[rules[i][0]];
+        if (!(typeof cstatus === 'boolean' && cstatus === false)) {
+          notFinished += 1;
+        } else {
+          finished += 1;
+        }
+      }
+      //verfiy finished,to do it
+      if (finished == rules.length) {
+        __.callback(false, verfiyObj.tips, __);
+      }
+
     },
     //dispatch verify rule
     distRule: function(k, v, callback) {
@@ -179,22 +191,22 @@
       if (k == 'ff-length') {
         valiData = new lengthVer(v)
 
-        return __.set_callback(valiData, callback);
+        return __.set_callback(valiData, k, callback);
       }
 
 
     },
     //set verfiy plugin callback method
-    set_callback: function(valiObj, callback) {
+    set_callback: function(valiObj, verfiyClass, callback) {
       var __ = this;
       //set validata object callback method
       valiObj.callback = function(err) {
         if (err) {
           __.checked = false;
-          callback(true);
+          callback.call(__, true, verfiyClass,valiObj);
         } else {
           __.checked = true;
-          callback(false);
+          callback.call(__, false, verfiyClass,valiObj);
 
         }
       }
@@ -218,7 +230,7 @@
     } else if (valArr.length == 1) {
       valArr[1] = valArr[0];
     }
-    var exp = new RegExp('\.{' + valArr[0] + ',' + valArr[1] + '}');
+    var exp = new RegExp('^\.{' + valArr[0] + ',' + valArr[1] + '}$');
     console.log(exp)
     if (!exp.test(itxt)) {
       //exp not ok
