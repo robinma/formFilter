@@ -243,6 +243,16 @@
 
   }
 
+  //verify regExp
+  var verRepExp=function(regStr){
+    this.tips='';
+    this.callback=null;
+    this.regstr=regStr;
+  }
+  verRepExp.prototype.valiData=function(itxt){
+    
+  }
+
   return function() {
     var argLen = arguments.length;
     if (argLen == 0) {
