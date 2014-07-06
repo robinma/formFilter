@@ -82,17 +82,20 @@
   function Field(params) {
     $.extend({
       require: false, //imperative
-      callback: ''
 
     }, params);
     //cache params
     this.params = params;
+    this.config = params.config;
     //cache seletor
     this.el = params.el;
     //cache field jqueryObj
     this.$el = params.$el;
 
-    this.callback = params.callback || nullFn;
+    this.callback = this.config.callback;
+
+    this.ruleStatus={};
+
     this.checked = false;
     this._init();
   }
@@ -103,7 +106,7 @@
     _init: function() {
       this.rules = this._extRule();
       this.emitEvn()
-      this._todoRule()
+      // this._todoRule()
     },
     //extraction ruler string
     _extRule: function() {
@@ -145,43 +148,58 @@
       var rules = __.rules;
       var ruleLen = rules.length;
       var data = __.getData();
-      $.each(rules, function(inx, rule) {
+
+      for (var i in rules) {
+        var rule = rules[i];
+        var resule;
         for (var i in rule) {
-          console.log(i,rule[i])
-          __.distRule(i, rule[i], data)
+          resule = __.distRule(i, rule[i], __.fieldVerify)
         }
-      });
+        if (!resule) {
+          break;
+        }
+      }
+
+    },
+    //set gobel feild status
+    fieldVerify: function(err) {
+      var __=this;
+      //ruleStatus
+      if (err) {
+
+      } else {
+
+      }
     },
     //dispatch verify rule
-    distRule: function(k, v, data, callback) {
-      var __=this,valiData;
+    distRule: function(k, v, callback) {
+      var __ = this,
+        valiData;
       //字符长度验证
       if (k == 'ff-length') {
         valiData = new lengthVer(v)
 
-        __.set_callback(valiData);
+        return __.set_callback(valiData, callback);
       }
-
-      
 
 
     },
     //set verfiy plugin callback method
-    set_callback: function(valiObj) {
+    set_callback: function(valiObj, callback) {
       var __ = this;
       //set validata object callback method
       valiObj.callback = function(err) {
-        
         if (err) {
           __.checked = false;
-          __.callback(true, valiObj.tips,__);
+          callback(true);
         } else {
           __.checked = true;
-          __.callback(false,valiObj.tips,__);
+          callback(false);
+
         }
       }
       //to do validata with input text
-      valiObj.valiData(__.getData())
+      return valiObj.valiData(__.getData())
 
     }
   });
@@ -202,17 +220,18 @@
     } else if (valArr.length == 1) {
       this.min = this.max = valArr[0];
     }
-    var vtlen = itxt.length;
-    if (vtlen < this.min || vtlen > this.max) {
+    var exp = new RegExp('\.{' + valArr[0] + ',' + valArr[1] + '}');
+    console.log(exp)
+    if (!exp.test(itxt)) {
+      //exp not ok
       this.callback(true)
       return false;
     }
+    //exp is ok
     this.callback(false)
     return true;
 
   }
-
-  var nullFn=function(){};
 
   return function() {
     var argLen = arguments.length;

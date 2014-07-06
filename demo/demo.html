@@ -11,18 +11,22 @@
 		<li>
 			<lable class="d">name:</lable>
 			<input type="text" name="name" ff-length="1,4,'请输入1-4个文字'">
+			<span class="tip"></span>
 		</li>
 		<li>
 			<lable class="d">password:</lable>
 			<input type="text" name="password">
+			<span class="tip"></span>
 		</li>
 		<li>
 			<lable class="d">rePassword:</lable>
 			<input type="text" name="repassword" ff-exp="/\S{6,18}/">
+			<span class="tip"></span>
 		</li>
 		<li>
 			<lable class="d">phoneNum:</lable>
 			<input type="text" name="phone" ff-exp="/13[0-9]{9}/">
+			<span class="tip"></span>
 		</li>
 		<li>
 			<input type="submit" name="button">
@@ -30,7 +34,14 @@
 	</ul>
 
 	<script type="text/javascript">
-
+	var setStatus=function(err,txt,field){
+		var tip=field.$el.parent('li').find('.tip');
+		if(err){
+			tip.text('');
+		}else{
+			tip.text(txt);
+		}
+	}
 	var ffilter=formFilter('ul[node-type="form"]',{
 		'  input[name="name"]':{
 			require:true,
@@ -48,9 +59,7 @@
 		}
 	});
 
-	var setStatus=function(){
-		console.log('----------callback',arguments)
-	}
+
 
 	</script>
 </body>
