@@ -188,11 +188,11 @@
       var __ = this,
         valiData;
       //字符长度验证
-      if (k == 'ff-length') {
+      if (k == ruleStr[0]) {
         valiData = new lengthVer(v)
 
         return __.set_callback(valiData, k, callback);
-      }else if(k == 'ff-exp'){
+      }else if(k == ruleStr[1]){
         validata = new verRepExp(v);
         return __.set_callback(validata,k,callback);
       }
