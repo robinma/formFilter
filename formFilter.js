@@ -192,6 +192,9 @@
         valiData = new lengthVer(v)
 
         return __.set_callback(valiData, k, callback);
+      }else if(k == 'ff-exp'){
+        validata = new verRepExp(v);
+        return __.set_callback(validata,k,callback);
       }
 
 
@@ -250,7 +253,12 @@
     this.regstr=regStr;
   }
   verRepExp.prototype.valiData=function(itxt){
-    
+    if(!this.regstr.test(itxt)){
+      this.callback(true);
+      return false
+    }
+    this.callback(false);
+    return true;
   }
 
   return function() {
