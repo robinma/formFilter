@@ -161,7 +161,7 @@
       var finished = 0,
         notFinished = 0;
       //rule Status
-      console.log(__, __.ruleStatus,err)
+      console.log(__, __.ruleStatus, err)
       __.ruleStatus[verfiyClass] = err;
 
       if (err) {
@@ -192,9 +192,11 @@
         valiData = new lengthVer(v)
 
         return __.set_callback(valiData, k, callback);
-      }else if(k == ruleStr[1]){
-        validata = new verRepExp(v);
-        return __.set_callback(validata,k,callback);
+
+        //正则验证
+      } else if (k == ruleStr[1]) {
+        valiData = new verRepExp(v);
+        return __.set_callback(valiData, k, callback);
       }
 
 
@@ -206,10 +208,10 @@
       valiObj.callback = function(err) {
         if (err) {
           __.checked = false;
-          callback.call(__, true, verfiyClass,valiObj);
+          callback.call(__, true, verfiyClass, valiObj);
         } else {
           __.checked = true;
-          callback.call(__, false, verfiyClass,valiObj);
+          callback.call(__, false, verfiyClass, valiObj);
 
         }
       }
@@ -234,7 +236,7 @@
       valArr[1] = valArr[0];
     }
     var exp = new RegExp('^\.{' + valArr[0] + ',' + valArr[1] + '}$');
-    console.log(exp)
+
     if (!exp.test(itxt)) {
       //exp not ok
       this.callback(true)
@@ -247,19 +249,22 @@
   }
 
   //verify regExp
-  var verRepExp=function(regStr){
-    this.tips='';
-    this.callback=null;
-    this.regstr=regStr;
+  var verRepExp = function(regStr) {
+    this.tips = '';
+    this.callback = null;
+    this.regstr = regStr;
   }
-  verRepExp.prototype.valiData=function(itxt){
-    if(!this.regstr.test(itxt)){
+  verRepExp.prototype.valiData = function(itxt) {
+    var exp = new RegExp(this.regstr);
+    console.log('exp ---',exp,exp.test(itxt))
+    if (!exp.test(itxt)) {
       this.callback(true);
       return false
     }
     this.callback(false);
     return true;
   }
+
 
   return function() {
     var argLen = arguments.length;
