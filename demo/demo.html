@@ -10,7 +10,7 @@
 	<ul node-type="form">
 		<li>
 			<lable class="d">name:</lable>
-			<input type="text" name="name" ff-length="1,4" ff-tips="请输入1-4个文字">
+			<input type="text" name="name" ff-length="1,4,'请输入1-4个文字'">
 			<span class="tip"></span>
 		</li>
 		<li>
@@ -55,8 +55,7 @@
 			require:true
 		},
 		'input[name="phone"]':{
-			'ff-exp':'/1{1}\d{2}\d{8}/ig',
-			'ff-tips':'请输入正确格式',
+			'ff-exp':['/1{1}\d{2}\d{8}/ig','输入数据错误'],
 			'ff-remote':''			
 		}
 	});

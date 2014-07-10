@@ -255,6 +255,8 @@
     this.regstr = regStr;
   }
   verRepExp.prototype.valiData = function(itxt) {
+    
+    
     var exp = new RegExp(this.regstr);
     console.log('exp ---',exp,exp.test(itxt))
     if (!exp.test(itxt)) {
