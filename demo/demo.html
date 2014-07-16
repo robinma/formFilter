@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>弹框</title>
-	<script type="text/javascript" src="http://www.yiban.cn/js/2013/library/jquery-1.7.min.js"></script>
+	<script type="text/javascript" src="./lib/jquery-1.9.1.min.js"></script>
 	<script type="text/javascript" src="../formFilter.js"></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
 		</li>
 		<li>
 			<lable class="d">phoneNum:</lable>
-			<input type="text" name="phone" ff-exp="/13[0-9]{9}/">
+			<input type="text" name="phone">
 			<span class="tip"></span>
 		</li>
 		<li>
@@ -55,8 +55,10 @@
 			require:true
 		},
 		'input[name="phone"]':{
+			require:true,
 			'ff-exp':['/1{1}\d{2}\d{8}/ig','输入数据错误'],
-			'ff-remote':''			
+			'ff-remote':'',
+			callback:setStatus		
 		}
 	});
 

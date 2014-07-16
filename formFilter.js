@@ -121,7 +121,8 @@
           ruleTemp[val] = rule;
         }
         //config rule isn't empty
-        var crule = __.params[val];
+        var crule = __.config[val];
+        console.log(inx,val,crule)
         if (crule) {
           ruleTemp[val] = crule;
         }
@@ -141,12 +142,14 @@
       var __ = this;
       this.$el.on('blur', function() {
         __._todoRule()
+        console.log('----- emitEvn')
       })
     },
     //traverse rule
     _todoRule: function() {
       var __ = this;
       var rules = __.rules;
+      console.log('__.rules',__.rules)
       for (var i = 0, l = rules.length; i < l; i++) {
         var rule = rules[i];
         var resule = __.distRule(rule[0], rule[1], __.fieldVerify)
@@ -195,6 +198,7 @@
 
         //正则验证
       } else if (k == ruleStr[1]) {
+        console.log('正则',k,ruleStr,v)
         valiData = new verRepExp(v);
         return __.set_callback(valiData, k, callback);
       }
@@ -237,7 +241,7 @@
     }
     var exp = new RegExp('^\.{' + valArr[0] + ',' + valArr[1] + '}$');
 
-    if (!exp.test(itxt)) {
+    if (exp.test(itxt)) {
       //exp not ok
       this.callback(true)
       return false;
@@ -250,6 +254,7 @@
 
   //verify regExp
   var verRepExp = function(regStr) {
+    console.log(regStr,'regExp')
     this.tips = '';
     this.callback = null;
     this.regstr = regStr;
