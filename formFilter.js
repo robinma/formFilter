@@ -122,7 +122,6 @@
         }
         //config rule isn't empty
         var crule = __.config[val];
-        console.log(inx,val,crule)
         if (crule) {
           ruleTemp[val] = crule;
         }
@@ -164,7 +163,7 @@
       var finished = 0,
         notFinished = 0;
       //rule Status
-      console.log(__, __.ruleStatus, err)
+      // console.log(__, __.ruleStatus, err)
       __.ruleStatus[verfiyClass] = err;
 
       if (err) {
@@ -193,12 +192,10 @@
       //字符长度验证
       if (k == ruleStr[0]) {
         valiData = new lengthVer(v)
-
         return __.set_callback(valiData, k, callback);
 
         //正则验证
       } else if (k == ruleStr[1]) {
-        console.log('正则',k,ruleStr,v)
         valiData = new verRepExp(v);
         return __.set_callback(valiData, k, callback);
       }
@@ -254,15 +251,21 @@
 
   //verify regExp
   var verRepExp = function(regStr) {
-    console.log(regStr,'regExp')
-    this.tips = '';
+    var strType=$.type(regStr);
+    var regArr=null;
+
+    if(strType == 'array'){
+      regArr = strType;
+    }else if(strType == 'string'){
+      regArr = eval('('+strType+')');
+    }
+    this.tips = regArr[1];
     this.callback = null;
-    this.regstr = regStr;
+    this.regstr = regArr[0];
   }
   verRepExp.prototype.valiData = function(itxt) {
 
     var exp = new RegExp(this.regstr);
-    console.log('exp ---',exp,exp.test(itxt))
     if (!exp.test(itxt)) {
       this.callback(true);
       return false
