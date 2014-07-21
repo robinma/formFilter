@@ -20,7 +20,7 @@
 		</li>
 		<li>
 			<lable class="d">rePassword:</lable>
-			<input type="text" name="repassword" ff-exp="/\S{6,18}/">
+			<input type="text" name="repassword">
 			<span class="tip"></span>
 		</li>
 		<li>
@@ -44,26 +44,28 @@
 		}
 	}
 	var ffilter=formFilter('ul[node-type="form"]',{
-		'  input[name="name"]':{
+		'input[name="name"]':{
 			require:true,
 			callback:setStatus
 		},
-		' input[name="password"]':{
-			require:true
+		'input[name="password"]':{
+			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/ig,'输入密码不正确'],
+			require:true,
+			callback:setStatus
 		},
 		'input[name="repassword"]':{
-			require:true
+			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/ig,'输入密码不正确'],
+			'ff-equal':['input[name="password"]','输入的内容不一致'],
+			require:true,
+			callback:setStatus
 		},
 		'input[name="phone"]':{
 			require:true,
-			'ff-exp':['/1{1}\d{2}\d{8}/ig','输入数据错误'],
+			'ff-exp':[/1{1}\d{2}\d{8}/ig,'输入数据错误'],
 			'ff-remote':'',
 			callback:setStatus		
 		}
 	});
-
-
-
 	</script>
 </body>
 </html>

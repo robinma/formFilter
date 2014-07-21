@@ -62,7 +62,8 @@
         var field = new Field({
           el: k.replace(/^\s*|\s*$/ig, ''),
           $el: __.get$Obj(k),
-          config: v
+          config: v,
+          groupField: __.fieldArr
         })
         __.fieldArr[k] = field;
       })
@@ -74,14 +75,13 @@
 
   });
 
-  var ruleStr = ['ff-length', 'ff-exp', 'ff-remote'];
+  var ruleStr = ['ff-length', 'ff-exp', 'ff-equal', 'ff-remote'];
   /**
    *  field function prototype
    */
   function Field(params) {
     $.extend({
       require: false, //imperative
-
     }, params);
     //cache params
     this.params = params;
@@ -91,7 +91,7 @@
     //cache field jqueryObj
     this.$el = params.$el;
 
-    this.callback = this.config.callback;
+    this.callback = this.config.callback || function() {};
 
     this.ruleStatus = {};
 
@@ -130,7 +130,6 @@
           rules.push([i, ruleTemp[i]])
         }
       })
-
       return rules;
     },
     getData: function() {
@@ -148,7 +147,7 @@
     _todoRule: function() {
       var __ = this;
       var rules = __.rules;
-      console.log('__.rules',__.rules)
+      
       for (var i = 0, l = rules.length; i < l; i++) {
         var rule = rules[i];
         var resule = __.distRule(rule[0], rule[1], __.fieldVerify)
@@ -193,10 +192,15 @@
       if (k == ruleStr[0]) {
         valiData = new lengthVer(v)
         return __.set_callback(valiData, k, callback);
-
-        //正则验证
-      } else if (k == ruleStr[1]) {
+      } 
+      //正则验证
+      else if (k == ruleStr[1]) {
         valiData = new verRepExp(v);
+        return __.set_callback(valiData, k, callback);
+      } 
+      //是否相等
+      else if (k == ruleStr[2]) {
+        valiData = new verEqual(v, __);
         return __.set_callback(valiData, k, callback);
       }
 
@@ -251,20 +255,21 @@
 
   //verify regExp
   var verRepExp = function(regStr) {
-    var strType=$.type(regStr);
-    var regArr=null;
+    var strType = $.type(regStr);
+    var regArr = null;
 
-    if(strType == 'array'){
-      regArr = strType;
-    }else if(strType == 'string'){
-      regArr = eval('('+strType+')');
+    if (strType == 'array') {
+      regArr = regStr;
+    } else if (strType == 'string') {
+      regArr = eval('(' + regStr + ')');
     }
     this.tips = regArr[1];
     this.callback = null;
     this.regstr = regArr[0];
   }
   verRepExp.prototype.valiData = function(itxt) {
-    var exp = new RegExp(this.regstr);
+    //var exp = new RegExp(this.regstr);
+    var exp = this.regstr;
     if (exp.test(itxt)) {
       this.callback(true);
       return false
@@ -272,7 +277,32 @@
     this.callback(false);
     return true;
   }
+  // verfiy equal field
+  var verEqual = function(regStr, field) {
+    var strType = $.type(regStr),
+    regArr=null;
+    
+    if (strType == 'array') {
+      regArr = regStr;
+    } else if (strType == 'string') {
+      regArr = eval('(' + regStr + ')');
+    }
+    var groups = field.params.groupField;
+    this.relFeld = groups[regArr[0]];
+    this.tips=regArr[1]?regArr[1]:'';
+    this.callback = null;
 
+    console.log('---------------------')
+  };
+  verEqual.prototype.valiData = function(itxt) {
+    var inpVal=this.relFeld.getData();
+    if(inpVal === itxt){
+      this.callback(true)
+      return false
+    }
+    this.callback(false)
+    return true
+  }
 
   return function() {
     var argLen = arguments.length;
