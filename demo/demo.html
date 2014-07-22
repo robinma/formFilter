@@ -29,6 +29,11 @@
 			<span class="tip"></span>
 		</li>
 		<li>
+			<lable class="d">verfiyCode:</lable>
+			<input type="text" name="vcode">
+			<span class="tip"></span>
+		</li>
+		<li>
 			<input type="submit" name="button">
 		</li>
 	</ul>
@@ -38,9 +43,9 @@
 		console.log(arguments)
 		var tip=field.$el.parent('li').find('.tip');
 		if(err){
-			tip.text('');
-		}else{
 			tip.text(txt);
+		}else{
+			tip.text('');
 		}
 	}
 	var ffilter=formFilter('ul[node-type="form"]',{
@@ -49,22 +54,41 @@
 			callback:setStatus
 		},
 		'input[name="password"]':{
-			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/ig,'输入密码不正确'],
+			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
 			require:true,
 			callback:setStatus
 		},
 		'input[name="repassword"]':{
-			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/ig,'输入密码不正确'],
+			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
 			'ff-equal':['input[name="password"]','输入的内容不一致'],
 			require:true,
 			callback:setStatus
 		},
 		'input[name="phone"]':{
 			require:true,
-			'ff-exp':[/1{1}\d{2}\d{8}/ig,'输入数据错误'],
+			'ff-exp':[/1{1}\d{2}\d{8}/i,'输入数据错误'],
 			'ff-remote':'',
 			callback:setStatus		
+		},
+		'input[name="vcode"]':{
+			'ff-exp':[/^[a-zA-Z0-9]{4}$/i,'输入的验证码不正确'],
+			'ff-remote':['/formFilter/demo/demo.php',function(data){
+				data=eval('('+data+')');
+				if(data.code == 1){
+					return true;
+				}else{
+					return false;
+				}
+			},'验证码错误'],
+			callback:setStatus
 		}
+	});
+
+	console.log(ffilter.check(),'ffilter.check()')
+
+	$('input[type="submit"]').on('click',function(){
+		console.log(ffilter.check(),'ffilter.check()')
+		console.log(ffilter.serialize(),'ffilter.serialize()')
 	});
 	</script>
 </body>

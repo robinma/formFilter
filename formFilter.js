@@ -39,8 +39,8 @@
     this.$el = (typeof el === 'object' ? el : $(el));
     params = params || {};
     //field array
-    this.fieldArr = {};
-
+    this.fieldArr = [];
+    this.fieldObj = {};
     this._init(params);
 
   };
@@ -52,26 +52,74 @@
     //formFilter init
     _init: function(params) {
       if (typeof params === 'object') {
-        this.traversal(params);
+        this._traversal(params);
       }
     },
     //traversal user config and push field object to fieldArr
-    traversal: function(params) {
-      var __ = this;
+    _traversal: function(params) {
+      var __ = this,
+        _paramLen = 0;
       $.each(params, function(k, v) {
+        //new a field object
         var field = new Field({
-          el: k.replace(/^\s*|\s*$/ig, ''),
-          $el: __.get$Obj(k),
-          config: v,
-          groupField: __.fieldArr
-        })
-        __.fieldArr[k] = field;
+            el: k.replace(/^\s*|\s*$/ig, ''),
+            $el: __.get$Obj(k),
+            config: v,
+            groupField: __.fieldObj
+          })
+          //push field Object to field array
+        __.fieldObj[k] = field;
+
+        __.fieldArr.push(field);
+
+        _paramLen++;
       })
+      //record field length
+      __.fieldLength = _paramLen;
     },
     //get form input jquery Obj
     get$Obj: function(seletor) {
       return this.$el.find(seletor);
+    },
+    check: function(callback) {
+      var __ = this,
+        returnVal = 0;
+      $.each(__.fieldObj, function(key, fobj) {
+        if (!fobj.checked) {
+          returnVal++;
+        }
+      });
+      return !returnVal;
+    },
+    serialize: function() {
+      var __ = this,
+        returnVal = [];
+      $.each(__.fieldObj, function(key, fobj) {
+        var temp = {};
+        temp[fobj.getFieldName()] = fobj.getData();
+        returnVal.push(temp)
+      });
+      return returnVal;
+    },
+    submit: function(callback) {
+      var __ = this,
+        inx = 0;
+      var traverseFields = function(index) {
+        var feild = __.fieldArr[index];
+        feild.todoRule(function() {
+          inx++;
+          if (inx >= __.fieldLength) {
+            return;
+          }
+          traverseFields(inx);
+        });
+      };
+
+      traverseFields(inx);
+
     }
+
+
 
   });
 
@@ -96,6 +144,7 @@
     this.ruleStatus = {};
 
     this.checked = false;
+    this._interrupt = false;
     this._init();
   }
 
@@ -135,24 +184,46 @@
     getData: function() {
       return this.$el.val().replace(/$\s*|\s*$/gi, '');
     },
+    getFieldName: function() {
+      return this.$el.attr('name');
+    },
     //tigger events
     emitEvn: function() {
       var __ = this;
       this.$el.on('blur', function() {
-        __._todoRule()
-        console.log('----- emitEvn')
+        __.todoRule()
       })
     },
     //traverse rule
-    _todoRule: function() {
-      var __ = this;
-      var rules = __.rules;
-      
-      for (var i = 0, l = rules.length; i < l; i++) {
-        var rule = rules[i];
-        var resule = __.distRule(rule[0], rule[1], __.fieldVerify)
-        if (!resule) break;
-      }
+    todoRule: function(callback) {
+      var __ = this,
+        rules = __.rules,
+        len = rules.length,
+        inx = 0;
+      //递归
+      var todorule = function(index) {
+        var rule = rules[index];
+        //test each rule and go on next
+        __.distRule(rule[0], rule[1], function(err, verClass, verObj) {
+          //test the rule is end and ok
+          var status = __.fieldVerify(err, verClass, verObj);
+          if (++inx >= len) {
+              callback && callback();
+              return;
+            }
+          if (status) {
+            todorule(inx);
+          }else{
+            if(inx<len){
+              callback && callback();
+            }
+          }
+
+        });
+      };
+
+      todorule(inx);
+
 
     },
     //set gobel feild status
@@ -162,11 +233,11 @@
       var finished = 0,
         notFinished = 0;
       //rule Status
-      // console.log(__, __.ruleStatus, err)
       __.ruleStatus[verfiyClass] = err;
 
       if (err) {
         __.callback(true, verfiyObj.tips, __);
+        __.checked = false;
         return false;
       }
       //check finish info
@@ -179,9 +250,12 @@
         }
       }
       //verfiy finished,to do it
-      if (finished == rules.length) {
+      if (finished == rules.length || !__._interrupt) {
         __.callback(false, verfiyObj.tips, __);
+        __.checked = true;
       }
+
+      return true;
 
     },
     //dispatch verify rule
@@ -191,31 +265,37 @@
       //字符长度验证
       if (k == ruleStr[0]) {
         valiData = new lengthVer(v)
-        return __.set_callback(valiData, k, callback);
-      } 
+      }
       //正则验证
       else if (k == ruleStr[1]) {
         valiData = new verRepExp(v);
-        return __.set_callback(valiData, k, callback);
-      } 
+      }
       //是否相等
       else if (k == ruleStr[2]) {
         valiData = new verEqual(v, __);
-        return __.set_callback(valiData, k, callback);
       }
-
+      //远程验证
+      else if (k == ruleStr[3]) {
+        valiData = new verRemote(v, __);
+      }
+      __.set_callback(valiData, k, callback);
 
     },
     //set verfiy plugin callback method
     set_callback: function(valiObj, verfiyClass, callback) {
       var __ = this;
       //set validata object callback method
+      //when callback params err is true,
+      //then verfiy plugin test result is error
       valiObj.callback = function(err) {
+        console.log('verfiy collback code:', err)
         if (err) {
-          __.checked = false;
+          //__.checked = false;
+          __._interrupt = true;
           callback.call(__, true, verfiyClass, valiObj);
         } else {
-          __.checked = true;
+          //__.checked = true;
+          __._interrupt = false;
           callback.call(__, false, verfiyClass, valiObj);
 
         }
@@ -242,7 +322,7 @@
     }
     var exp = new RegExp('^\.{' + valArr[0] + ',' + valArr[1] + '}$');
 
-    if (exp.test(itxt)) {
+    if (!exp.test(itxt)) {
       //exp not ok
       this.callback(true)
       return false;
@@ -269,8 +349,9 @@
   }
   verRepExp.prototype.valiData = function(itxt) {
     //var exp = new RegExp(this.regstr);
+    console.log('-====verRepExp')
     var exp = this.regstr;
-    if (exp.test(itxt)) {
+    if (!exp.test(itxt)) {
       this.callback(true);
       return false
     }
@@ -280,8 +361,8 @@
   // verfiy equal field
   var verEqual = function(regStr, field) {
     var strType = $.type(regStr),
-    regArr=null;
-    
+      regArr = null;
+
     if (strType == 'array') {
       regArr = regStr;
     } else if (strType == 'string') {
@@ -289,19 +370,47 @@
     }
     var groups = field.params.groupField;
     this.relFeld = groups[regArr[0]];
-    this.tips=regArr[1]?regArr[1]:'';
+    this.tips = regArr[1] ? regArr[1] : '';
     this.callback = null;
-
-    console.log('---------------------')
   };
   verEqual.prototype.valiData = function(itxt) {
-    var inpVal=this.relFeld.getData();
-    if(inpVal === itxt){
+    console.log('-====verEqual')
+    var inpVal = this.relFeld.getData();
+    if (inpVal !== itxt) {
       this.callback(true)
       return false
     }
     this.callback(false)
     return true
+  }
+
+  //async verfiy module
+  var verRemote = function(remoteparam, field) {
+    var strType = $.type(remoteparam),
+      regArr = null;
+
+    if (strType == 'array') {
+      regArr = remoteparam;
+    } else if (strType == 'string') {
+      regArr = eval('(' + remoteparam + ')');
+    }
+    this.remote = regArr[0];
+    this.verFn = regArr[1];
+    this.tips = regArr[2];
+    this.filedName = field.$el.attr('name');
+    this.callback = null;
+  }
+  verRemote.prototype.valiData = function(itxt) {
+    var __ = this;
+    var params = {};
+    params[__.filedName] = itxt;
+    $.get(this.remote, params, function(data) {
+      if (!__.verFn(data)) {
+        __.callback(true);
+      } else {
+        __.callback(false);
+      }
+    }, 'json');
   }
 
   return function() {
