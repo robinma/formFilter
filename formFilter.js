@@ -47,7 +47,7 @@
   //extend method
   $.extend(formFilter.prototype, {}, {
     //formFilter version Number
-    version: '0.0.0',
+    version: '0.0.1',
     //formFilter init
     _init: function(params) {
       if (typeof params === 'object') {
