@@ -1,7 +1,6 @@
 /**
  * a form verfiy tool
  *
- *
  * Author by robinma
  *
  *formFilter([form jQObj | seletor],fieldConfig)
@@ -104,11 +103,17 @@
     submit: function(callback) {
       var __ = this,
         inx = 0;
+      // final call it
+      var finish = function() {
+        callback(!__.check(), __.serialize());
+      };
+
       var traverseFields = function(index) {
         var feild = __.fieldArr[index];
         feild.todoRule(function() {
           inx++;
           if (inx >= __.fieldLength) {
+            finish()
             return;
           }
           traverseFields(inx);
@@ -200,6 +205,13 @@
         rules = __.rules,
         len = rules.length,
         inx = 0;
+      //require=true
+      var itxt = __.getData();
+      if (!__.config.require && !itxt) {
+        callback && callback();
+        return;
+      }
+
       //递归
       var todorule = function(index) {
         var rule = rules[index];
@@ -208,13 +220,13 @@
           //test the rule is end and ok
           var status = __.fieldVerify(err, verClass, verObj);
           if (++inx >= len) {
-              callback && callback();
-              return;
-            }
+            callback && callback();
+            return;
+          }
           if (status) {
             todorule(inx);
-          }else{
-            if(inx<len){
+          } else {
+            if (inx < len) {
               callback && callback();
             }
           }
@@ -288,7 +300,6 @@
       //when callback params err is true,
       //then verfiy plugin test result is error
       valiObj.callback = function(err) {
-        console.log('verfiy collback code:', err)
         if (err) {
           //__.checked = false;
           __._interrupt = true;
@@ -349,7 +360,6 @@
   }
   verRepExp.prototype.valiData = function(itxt) {
     //var exp = new RegExp(this.regstr);
-    console.log('-====verRepExp')
     var exp = this.regstr;
     if (!exp.test(itxt)) {
       this.callback(true);
@@ -374,7 +384,6 @@
     this.callback = null;
   };
   verEqual.prototype.valiData = function(itxt) {
-    console.log('-====verEqual')
     var inpVal = this.relFeld.getData();
     if (inpVal !== itxt) {
       this.callback(true)

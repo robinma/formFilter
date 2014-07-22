@@ -55,7 +55,7 @@
 		},
 		'input[name="password"]':{
 			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
-			require:true,
+			//require:true,
 			callback:setStatus
 		},
 		'input[name="repassword"]':{
@@ -89,6 +89,9 @@
 	$('input[type="submit"]').on('click',function(){
 		console.log(ffilter.check(),'ffilter.check()')
 		console.log(ffilter.serialize(),'ffilter.serialize()')
+		ffilter.submit(function(err){
+			console.log('check err',err)
+		});
 	});
 	</script>
 </body>
