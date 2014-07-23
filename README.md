@@ -18,9 +18,9 @@
 - QQ:`316933268`
 
 
-## How to use ##
+## 二、 How to use ##
 
-### init to do ###
+### 2.1 init to do ###
     //params
     formFilter([form jQObj | seletor],fieldConfig)
 
@@ -32,7 +32,7 @@
 		callback:setStatu	
     })
 
-### field config list ###
+### 2.2 field config list ###
 
 - Boolen **{require}**  ---is or not imperactive 是否为必填项
 - String|Array **{ff-length}** 常规字符串限制
@@ -88,7 +88,7 @@
 	});
 
 
-###formFilter return Object method ###
+### 2.3 formFilter return Object method ###
 ---
 **check this form whether qualified**
 
