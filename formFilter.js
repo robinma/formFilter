@@ -319,8 +319,15 @@
 
   //verfiy string length
   var lengthVer = function(lenstr) {
-    this.valArr = lenstr.split(',');
+    var strType = $.type(lenstr);
+    var regArr;
+    if (strType == 'array') {
+      regArr = lenstr;
+    } else if (strType == 'string') {
+      regArr = lenstr.split(',');
+    }
     this.tips = '';
+    this.valArr = regArr;
     this.callback = null;
 
   }
