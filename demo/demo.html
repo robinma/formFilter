@@ -57,25 +57,25 @@
 			}
 		},
 		'input[name="password"]':{
-			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
-			//require:true,
+			'ff_exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
+			require:true,
 			callback:setStatus
 		},
 		'input[name="repassword"]':{
-			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
-			'ff-equal':['input[name="password"]','输入的内容不一致'],
+			'ff_exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],
+			'ff_equal':['input[name="password"]','输入的内容不一致'],
 			require:true,
 			callback:setStatus
 		},
 		'input[name="phone"]':{
 			require:true,
-			'ff-exp':[/1{1}\d{2}\d{8}/i,'输入数据错误'],
-			'ff-remote':'',
+			'ff_exp':[/1{1}\d{2}\d{8}/i,'输入数据错误'],
+			'ff_remote':'',
 			callback:setStatus		
 		},
 		'input[name="vcode"]':{
-			'ff-exp':[/^[a-zA-Z0-9]{4}$/i,'输入的验证码不正确'],
-			'ff-remote':['/formFilter/demo/demo.php',function(data){
+			'ff_exp':[/^[a-zA-Z0-9]{4}$/i,'输入的验证码不正确'],
+			'ff_remote':['/formFilter/demo/demo.php',function(data){
 				data=eval('('+data+')');
 				if(data.code == 1){
 					return true;

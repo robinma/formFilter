@@ -212,7 +212,7 @@
       if(typeof this.config.keyup === 'function'){
         this.config.keyup();
       }
-    }
+    },
     //traverse rule
     todoRule: function(callback) {
       var __ = this,
