@@ -128,7 +128,7 @@
 
   });
 
-  var ruleStr = ['ff_length', 'ff_exp', 'ff_equal', 'ff_remote'];
+  var ruleStr = ['ff_length', 'ff_exp', 'ff_equal', '_require','ff_remote'];
   /**
    *  field function prototype
    */
@@ -157,6 +157,9 @@
   $.extend(Field.prototype, {}, {
     //init field
     _init: function() {
+      if(this.config.require){
+        this.config[ruleStr[3]] = [/\S+/i,1];
+      }
       this.rules = this._extRule();
       this.emitEvn()
       // this._todoRule()
@@ -220,11 +223,11 @@
         len = rules.length,
         inx = 0;
       //require=true
-      var itxt = __.getData();
-      if (!__.config.require && !itxt) {
-        callback && callback();
-        return;
-      }
+      // var itxt = __.getData();
+      // if (!__.config.require && !itxt) {
+      //   callback && callback();
+      //   return;
+      // }
 
       //递归
       var todorule = function(index) {
@@ -292,8 +295,12 @@
     distRule: function(k, v, callback) {
       var __ = this,
         valiData;
+      //require verfiy
+      if(k == ruleStr[3]){
+        valiData = new verRepExp(v);
+      }
       //字符长度验证
-      if (k == ruleStr[0]) {
+      else if (k == ruleStr[0]) {
         valiData = new lengthVer(v)
       }
       //正则验证
@@ -305,7 +312,7 @@
         valiData = new verEqual(v, __);
       }
       //远程验证
-      else if (k == ruleStr[3]) {
+      else if (k == ruleStr[4]) {
         valiData = new verRemote(v, __);
       }
       __.set_callback(valiData, k, callback);
