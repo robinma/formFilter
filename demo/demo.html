@@ -10,7 +10,7 @@
 	<ul node-type="form">
 		<li>
 			<lable class="d">name:</lable>
-			<input type="text" name="name" ff-length="1,4,'请输入1-4个文字'">
+			<input type="text" name="name" _ff-length="1,4,'请输入1-4个文字'">
 			<span class="tip"></span>
 		</li>
 		<li>
@@ -51,7 +51,10 @@
 	var ffilter=formFilter('ul[node-type="form"]',{
 		'input[name="name"]':{
 			require:true,
-			callback:setStatus
+			callback:setStatus,
+			focus:function(){
+				console.log('focus')
+			}
 		},
 		'input[name="password"]':{
 			'ff-exp':[/^(?!\d+$)(?![a-zA-Z]+$)[a-zA-Z0-9]{6,}$/i,'输入密码不正确'],

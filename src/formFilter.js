@@ -128,7 +128,7 @@
 
   });
 
-  var ruleStr = ['ff-length', 'ff-exp', 'ff-equal', 'ff-remote'];
+  var ruleStr = ['ff_length', 'ff_exp', 'ff_equal', 'ff_remote'];
   /**
    *  field function prototype
    */
@@ -197,8 +197,22 @@
       var __ = this;
       this.$el.on('blur', function() {
         __.todoRule()
+      }).on('focus', function() {
+        __._focus();
+      }).on('keyup', function(e) {
+        __._keyup()
       })
     },
+    _focus: function() {
+      if(typeof this.config.focus === 'function'){
+        this.config.focus();
+      }
+    },
+    _keyup:function(){
+      if(typeof this.config.keyup === 'function'){
+        this.config.keyup();
+      }
+    }
     //traverse rule
     todoRule: function(callback) {
       var __ = this,
@@ -215,6 +229,10 @@
       //递归
       var todorule = function(index) {
         var rule = rules[index];
+        if (!rule) {
+          callback && callback();
+          return;
+        }
         //test each rule and go on next
         __.distRule(rule[0], rule[1], function(err, verClass, verObj) {
           //test the rule is end and ok
