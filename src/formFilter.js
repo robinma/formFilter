@@ -110,7 +110,7 @@
 
       var traverseFields = function(index) {
         var feild = __.fieldArr[index];
-        feild.todoRule(function() {
+        feild.todoRule(true,function() {
           inx++;
           if (inx >= __.fieldLength) {
             finish()
@@ -162,7 +162,7 @@
       }
       this.rules = this._extRule();
       this.emitEvn()
-      // this._todoRule()
+      this.todoRule('')
     },
     //extraction ruler string
     _extRule: function() {
@@ -199,7 +199,7 @@
     emitEvn: function() {
       var __ = this;
       this.$el.on('blur', function() {
-        __.todoRule()
+        __.todoRule(true)
       }).on('focus', function() {
         __._focus();
       }).on('keyup', function(e) {
@@ -217,17 +217,12 @@
       }
     },
     //traverse rule
-    todoRule: function(callback) {
+    //param {boolean} runcb, to run define callback
+    todoRule: function(runcb,callback) {
       var __ = this,
         rules = __.rules,
         len = rules.length,
         inx = 0;
-      //require=true
-      // var itxt = __.getData();
-      // if (!__.config.require && !itxt) {
-      //   callback && callback();
-      //   return;
-      // }
 
       //递归
       var todorule = function(index) {
@@ -237,7 +232,7 @@
           return;
         }
         //test each rule and go on next
-        __.distRule(rule[0], rule[1], function(err, verClass, verObj) {
+        __.distRule(rule[0], rule[1],runcb, function(err, verClass, verObj) {
           //test the rule is end and ok
           var status = __.fieldVerify(err, verClass, verObj);
           if (++inx >= len) {
@@ -256,8 +251,6 @@
       };
 
       todorule(inx);
-
-
     },
     //set gobel feild status
     fieldVerify: function(err, verfiyClass, verfiyObj) {
@@ -292,7 +285,7 @@
 
     },
     //dispatch verify rule
-    distRule: function(k, v, callback) {
+    distRule: function(k, v, runcb, callback) {
       var __ = this,
         valiData;
       //require verfiy
@@ -315,23 +308,23 @@
       else if (k == ruleStr[4]) {
         valiData = new verRemote(v, __);
       }
-      __.set_callback(valiData, k, callback);
+      __.set_callback(valiData, k, runcb, callback);
 
     },
     //set verfiy plugin callback method
-    set_callback: function(valiObj, verfiyClass, callback) {
+    set_callback: function(valiObj, verfiyClass, runcb, callback) {
       var __ = this;
       //set validata object callback method
       //when callback params err is true,
       //then verfiy plugin test result is error
       valiObj.callback = function(err) {
         if (err) {
-          //__.checked = false;
           __._interrupt = true;
+          if(runcb)
           callback.call(__, true, verfiyClass, valiObj);
         } else {
-          //__.checked = true;
           __._interrupt = false;
+          if(runcb)
           callback.call(__, false, verfiyClass, valiObj);
 
         }
