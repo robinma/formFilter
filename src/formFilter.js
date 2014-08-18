@@ -232,9 +232,9 @@
           return;
         }
         //test each rule and go on next
-        __.distRule(rule[0], rule[1],runcb, function(err, verClass, verObj) {
+        __.distRule(rule[0], rule[1], function(err, verClass, verObj) {
           //test the rule is end and ok
-          var status = __.fieldVerify(err, verClass, verObj);
+          var status = __.fieldVerify(err, verClass, verObj,runcb);
           if (++inx >= len) {
             callback && callback();
             return;
@@ -253,15 +253,15 @@
       todorule(inx);
     },
     //set gobel feild status
-    fieldVerify: function(err, verfiyClass, verfiyObj) {
+    fieldVerify: function(err, verfiyClass, verfiyObj, runcb) {
       var __ = this;
       var rules = __.rules;
       var finished = 0,
         notFinished = 0;
       //rule Status
       __.ruleStatus[verfiyClass] = err;
-
       if (err) {
+        if(runcb)
         __.callback(true, verfiyObj.tips, __);
         __.checked = false;
         return false;
@@ -277,6 +277,7 @@
       }
       //verfiy finished,to do it
       if (finished == rules.length || !__._interrupt) {
+        if(runcb)
         __.callback(false, verfiyObj.tips, __);
         __.checked = true;
       }
@@ -285,7 +286,7 @@
 
     },
     //dispatch verify rule
-    distRule: function(k, v, runcb, callback) {
+    distRule: function(k, v, callback) {
       var __ = this,
         valiData;
       //require verfiy
@@ -308,11 +309,11 @@
       else if (k == ruleStr[4]) {
         valiData = new verRemote(v, __);
       }
-      __.set_callback(valiData, k, runcb, callback);
+      __.set_callback(valiData, k, callback);
 
     },
     //set verfiy plugin callback method
-    set_callback: function(valiObj, verfiyClass, runcb, callback) {
+    set_callback: function(valiObj, verfiyClass, callback) {
       var __ = this;
       //set validata object callback method
       //when callback params err is true,
@@ -320,11 +321,9 @@
       valiObj.callback = function(err) {
         if (err) {
           __._interrupt = true;
-          if(runcb)
           callback.call(__, true, verfiyClass, valiObj);
         } else {
           __._interrupt = false;
-          if(runcb)
           callback.call(__, false, verfiyClass, valiObj);
 
         }
