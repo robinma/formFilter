@@ -105,7 +105,7 @@
         inx = 0;
       // final call it
       var finish = function() {
-        callback(!__.check(), __.serialize());
+        if(typeof callback === 'function')callback(!__.check(), __.serialize());
       };
 
       var traverseFields = function(index) {
