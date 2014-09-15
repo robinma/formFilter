@@ -430,6 +430,8 @@
     this.remote = regArr[0];
     this.verFn = regArr[1];
     this.tips = regArr[2];
+    this.htxType =  regArr[3] || 'get';
+    this.pdata = regArr[4] || {};
     this.filedName = field.$el.attr('name');
     this.callback = null;
   }
@@ -437,7 +439,8 @@
     var __ = this;
     var params = {};
     params[__.filedName] = itxt;
-    $.get(this.remote, params, function(data) {
+    $.extend(params,this.pdata);
+    $[this.htxType](this.remote, params, function(data) {
       if (!__.verFn(data)) {
         __.callback(true);
       } else {
