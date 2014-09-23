@@ -111,6 +111,15 @@
 		}	
 	});
 
+###2.4 formFilter emit events###
+
+**focus -- when form files get focus emit it**
+	
+	formfilter.on('focus',function(fileElement,fileObject){...})
+
+**keyup -- when form files keyup emit it**
+	
+	formfilter.on('keyup',function(fileElement,fileObject){...})
 
 ----------
 project **[demo](http://htmlpreview.github.io/?https://github.com/robinma/formFilter/blob/master/demo/demo.html)**
