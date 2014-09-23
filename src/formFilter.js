@@ -22,6 +22,30 @@
 
 })(this, function() {
 
+  var pubsub = {
+    _handlers: '',
+    on: function(etype, handler) {
+      if (typeof this._handlers !== 'object') {
+        this._handlers = [];
+      }
+      if (!this._handlers[etype]) {
+        this._handlers[etype] = []
+      }
+      if (typeof handler === 'function') {
+        this._handlers[etype].push(handler)
+      }
+      return this;
+    },
+    emit: function(etype) {
+      var args = Array.prototype.slice.call(arguments, 1)
+      var handlers = this._handlers[etype] || [];
+      for (var i = 0, l = handlers.length; i < l; i++) {
+        handlers[i].apply(null, args)
+      }
+      return this;
+    }
+  };
+
   //formFilter constracter
   var formFilter = function() {
     var arg = arguments;
@@ -45,7 +69,7 @@
   };
 
   //extend method
-  $.extend(formFilter.prototype, {}, {
+  $.extend(formFilter.prototype, pubsub, {
     //formFilter version Number
     version: '0.0.1',
     //formFilter init
@@ -64,7 +88,8 @@
             el: k.replace(/^\s*|\s*$/ig, ''),
             $el: __.get$Obj(k),
             config: v,
-            groupField: __.fieldObj
+            groupField: __.fieldObj,
+            parent:__
           })
           //push field Object to field array
         __.fieldObj[k] = field;
@@ -119,13 +144,8 @@
           traverseFields(inx);
         });
       };
-
       traverseFields(inx);
-
     }
-
-
-
   });
 
   var ruleStr = ['ff_length', 'ff_exp', 'ff_equal', '_require','ff_remote'];
@@ -143,6 +163,7 @@
     this.el = params.el;
     //cache field jqueryObj
     this.$el = params.$el;
+    this.parent = params.parent;
 
     this.callback = this.config.callback || function() {};
 
@@ -202,8 +223,10 @@
         __.todoRule(true)
       }).on('focus', function() {
         __._focus();
+        __.parent.emit('focus',__.$el,__);
       }).on('keyup', function(e) {
         __._keyup()
+        __.parent.emit('keyup',__.$el,__);
       })
     },
     _focus: function() {
