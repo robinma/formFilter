@@ -22,6 +22,9 @@
 
 })(this, function() {
 
+  var objproto = Object.prototype;
+  var tostring = objproto.toString;
+
   var pubsub = {
     _handlers: '',
     on: function(etype, handler) {
@@ -45,6 +48,7 @@
       return this;
     }
   };
+
 
   //formFilter constracter
   var formFilter = function() {
@@ -401,20 +405,39 @@
     } else if (strType == 'string') {
       regArr = eval('(' + regStr + ')');
     }
-    this.tips = regArr[1];
-    this.callback = null;
-    this.regstr = regArr[0];
+    this.tips= '';
+   // this.callback = null;
+   this.regArr = regArr;
   }
   verRepExp.prototype.valiData = function(itxt) {
-    //var exp = new RegExp(this.regstr);
-    var exp = this.regstr;
-    if (!exp.test(itxt)) {
-      this.callback(true);
-      return false
+    var self = this,testval;
+     function testReg(exp,itxt){
+      if(!exp.test(itxt)){
+        self.callback(true);
+        return false;
+      }
+      self.callback(false);
+      return true;
+    };
+
+    if(tostring.call(self.regArr[0]) === '[object RegExp]'){
+      self.tips = self.regArr[1];
+      testval = testReg(self.regArr[0],itxt);
+    }else{
+      for(var i = 0,l = self.regArr.length;i<l;i++){
+        var regexp = self.regArr[i].regexp;
+        self.tips = self.regArr[i].label;
+        testval = testReg(regexp,itxt);
+        if(!testval){
+          return testval;
+        }
+      }
     }
-    this.callback(false);
-    return true;
-  }
+    return testval;
+
+
+  };
+
   // verfiy equal field
   var verEqual = function(regStr, field) {
     var strType = $.type(regStr),
