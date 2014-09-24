@@ -479,7 +479,7 @@
     this.htxType =  regArr[3] || 'get';
     this.pdata = regArr[4] || {};
     this.datatype = regArr[5] || 'json';
-    this.filedName = field.$el.attr('name');
+    this.filedName = regArr[6]||field.$el.attr('name');
     this.callback = null;
   }
   verRemote.prototype.valiData = function(itxt) {
