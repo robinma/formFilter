@@ -455,6 +455,7 @@
     this.tips = regArr[2];
     this.htxType =  regArr[3] || 'get';
     this.pdata = regArr[4] || {};
+    this.datatype = regArr[5] || 'json';
     this.filedName = field.$el.attr('name');
     this.callback = null;
   }
@@ -463,13 +464,31 @@
     var params = {};
     params[__.filedName] = itxt;
     $.extend(params,this.pdata);
-    $[this.htxType](this.remote, params, function(data) {
-      if (!__.verFn(data)) {
+    // $[this.htxType](this.remote, params, function(data) {
+    //   if (!__.verFn(data)) {
+    //     __.callback(true);
+    //   } else {
+    //     __.callback(false);
+    //   }
+    // }, 'json');
+
+    $.ajax({
+      type:this.htxType,
+      url:this.remote,
+      data:params,
+      dataType:this.datatype,
+      success:function(data){
+        if (!__.verFn(data)) {
         __.callback(true);
       } else {
         __.callback(false);
       }
-    }, 'json');
+      },
+      error:function(xhr,type){
+        console && console.log(xhr,type);
+      }
+    })
+
   }
 
   return function() {
