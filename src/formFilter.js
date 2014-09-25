@@ -413,10 +413,10 @@
     var self = this,testval;
      function testReg(exp,itxt){
       if(!exp.test(itxt)){
-        self.callback(true);
+       // self.callback(true);
         return false;
       }
-      self.callback(false);
+      //self.callback(false);
       return true;
     };
 
@@ -432,6 +432,11 @@
           return testval;
         }
       }
+    }
+    if(testval){
+      self.callback(false);
+    }else{
+      self.callback(true)
     }
     return testval;
 
