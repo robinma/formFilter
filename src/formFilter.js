@@ -412,6 +412,8 @@
   verRepExp.prototype.valiData = function(itxt) {
     var self = this,testval;
      function testReg(exp,itxt){
+      console.log(exp,itxt,exp.test(itxt));
+
       if(!exp.test(itxt)){
        // self.callback(true);
         return false;
@@ -429,7 +431,8 @@
         self.tips = self.regArr[i].label;
         testval = testReg(regexp,itxt);
         if(!testval){
-          return testval;
+         // return testval;
+         break;
         }
       }
     }
