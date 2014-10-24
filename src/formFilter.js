@@ -345,13 +345,13 @@
       //set validata object callback method
       //when callback params err is true,
       //then verfiy plugin test result is error
-      valiObj.callback = function(err) {
+      valiObj.callback = function(err,data) {
         if (err) {
           __._interrupt = true;
-          callback.call(__, true, verfiyClass, valiObj);
+          callback.call(__, true, verfiyClass, valiObj,data);
         } else {
           __._interrupt = false;
-          callback.call(__, false, verfiyClass, valiObj);
+          callback.call(__, false, verfiyClass, valiObj,data);
 
         }
       }
@@ -510,9 +510,9 @@
       dataType:this.datatype,
       success:function(data){
         if (!__.verFn(data)) {
-        __.callback(true);
+        __.callback(true,data);
       } else {
-        __.callback(false);
+        __.callback(false,data);
       }
       },
       error:function(xhr,type){
