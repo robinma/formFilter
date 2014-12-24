@@ -76,6 +76,34 @@
 			'ff_remote':'',
 			callback:setStatus		
 		},
+		'input[node-type="bac_name"]': {
+			'ff_exp': [{
+				regexp: /\S+/i,
+				label: '用户名不能为空'
+			}, {
+				regexp: /\S{4,}/i,
+				label: '用户名长度不得小于4位'
+			}, {
+				regexp: /^\S+[^\s+]\S+$/i,
+				label: '用户名不得有空格'
+			}, {
+				regexp: /^[\u4e00-\u9fa5\w]{4,}$/i,
+				label: '用户名由中、英文、数字组成'
+			}],
+			'ff_remote': ['/dianping/ajax/main/ajax_reg.php', function(data) {
+				data = eval(data);
+				data = data[0];
+				if (data.re == 'ok') {
+					return true;
+				} else {
+					return false;
+				}
+			}, '用户名已存在', 'post', {
+				action: 'check',
+				type: 'name'
+			}, 'text', 'word'],
+			callback: formcallback
+		},
 		'input[name="vcode"]':{
 			'ff_exp':[/^[a-zA-Z0-9]{4}$/i,'输入的验证码不正确'],
 			'ff_remote':['/formFilter/demo/demo.php',function(data){
