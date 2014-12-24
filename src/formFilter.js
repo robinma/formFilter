@@ -158,7 +158,7 @@
    */
   function Field(params) {
     $.extend({
-      require: false, //imperative
+      require: false //imperative
     }, params);
     //cache params
     this.params = params;
@@ -412,7 +412,7 @@
   verRepExp.prototype.valiData = function(itxt) {
     var self = this,testval;
      function testReg(exp,itxt){
-      console.log(exp,itxt,exp.test(itxt));
+      // window.console && console.log(exp,itxt,exp.test(itxt));
 
       if(!exp.test(itxt)){
        // self.callback(true);
@@ -516,7 +516,7 @@
       }
       },
       error:function(xhr,type){
-        console && console.log(xhr,type);
+        // window.console && console.log(xhr,type);
       }
     })
 
